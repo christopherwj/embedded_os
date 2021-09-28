@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 
-#define MAX_NO_OF_THREADS 2
+#define MAX_NO_OF_THREADS 4
 #define MAX_NO_OF_ELEMENTS 1000000000
 
 typedef struct arg_data {
@@ -40,7 +40,7 @@ int main()
 {
     //let the array consists of first MAX_NO_OF_ELEMENTS integers, 
     //1 to MAX_NO_OF_ELEMENTS
-    for (int i = 1; i <= MAX_NO_OF_ELEMENTS; i++)
+    for (unsigned long long i = 1; i <= MAX_NO_OF_ELEMENTS; i++)
         arr[i] = i;
     
     //pthread objects

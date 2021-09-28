@@ -1,6 +1,5 @@
 # Flags common to all targets
-CFLAGS  = -std=c++11
-CFLAGS += -Wall -Werror 
+CFLAGS = -Wall
 
 # All Target
 all:
@@ -10,13 +9,13 @@ all:
 
 # Main build target
 base_case:
-	g++ $(CFLAGS) proj_1_base_case.c -o "base_case"
+	gcc $(CFLAGS) proj_1_base_case.c -o "base_case"
 
 multithreading:
-	g++ $(CFLAGS) proj_1_multithreading.c -lpthread -mcmodel=medium -fno-unwind-tables -fno-asynchronous-unwind-tables -o "multithreading"
+	gcc $(CFLAGS) proj_1_multithreading.c -lpthread -mcmodel=medium -fno-unwind-tables -fno-asynchronous-unwind-tables -o "multithreading"
 
 multitasking:
-	g++ $(CFLAGS) proj_1_multitasking.c -g3 -O0 -o "multitasking"
+	gcc $(CFLAGS) proj_1_multitasking.c -g3 -O0 -o "multitasking"
 
 # Other targets
 debug: CFLAGS += -g
