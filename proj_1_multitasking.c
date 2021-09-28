@@ -3,39 +3,41 @@
 #include <sys/wait.h>
 #include <stdlib.h>
 #include <time.h>
+#include <stdint.h>
+
+typedef unsigned long long ull_t;
 
 pid_t mainId;
-unsigned long long int N[] = {100000000, 1000000000, 10000000000};
-unsigned int tasks[] = {2,4,8};
+ull_t N[] = {(ull_t)1e8, (ull_t)1e9, (ull_t)1e10};
+unsigned tasks[] = {16,2,4,8};
 
-
-void sumOfN(unsigned long long int n, unsigned int tasks){
-	//printf("\n\n\n%llu\n\n\n", n);
+void sumOfN(ull_t n, unsigned tasks){
 	pid_t creatorId;
 	int pipefd[2];
 	clock_t start, end;
-	double timeUsed;
-	unsigned int long long total = 0;
-	unsigned long long int sum = 0;
-	unsigned long long int max = n;
-	unsigned long long int min = 0;
-	unsigned long long int range;
+	ull_t total = 0;
+	uint64_t sum = 0;
+	ull_t max = n;
+	ull_t min = 0;
+	ull_t range;
 	pipe(pipefd);
 	
 	start = clock();
 	// Create n tasks.
-	for(int i = 1; i < tasks; i = i * 2){
+	for(unsigned i = 1; i < tasks; i = i * 2){
 		creatorId = getpid();
 		fork();
 		range = (max-min)/2;
-		if(creatorId != getpid()) min = max-range;
-		else max = max-range;
+		if(creatorId != getpid())
+			min = max-range;
+		else
+			max = max-range;
 	}
 
-	for(unsigned long long int i = min; i < max; i++){
+	for(ull_t i = min; i < max; i++){
 		sum += i;
 	}
-	write(pipefd[1], &sum, sizeof(sum));
+	write(pipefd[1], &sum, (size_t)8);
 	close(pipefd[1]);
 
 //	printf("ID: %d Range: %llu %llu %llu Total: %llu\n", getpid(), min, max, range, sum);
@@ -43,8 +45,10 @@ void sumOfN(unsigned long long int n, unsigned int tasks){
 //	printf("Main ID: %d\n", mainId);
 	if(getpid() == mainId){
 		wait(NULL);
-		for(int i = 0; i < tasks; i++){
-			read(pipefd[0], &sum, sizeof(sum));
+		for(unsigned i = 0; i < tasks; i++){
+			wait(NULL);
+			ssize_t r;
+			r = read(pipefd[0], &sum, (size_t)8);
 			total += sum;
 		}
 		end = clock();
@@ -52,12 +56,10 @@ void sumOfN(unsigned long long int n, unsigned int tasks){
 	}
 }
 
-
-
 int main(int argc, char *argv[]){
 	mainId = getpid();
-	for(int i = 0; i < sizeof(N)/sizeof(N[0]); i++){
-		for(int j = 0; j < sizeof(tasks)/sizeof(tasks[0]); j++){
+	for(int i = 0; i < 3; i++){
+		for(int j = 0; j < 1; j++){
 			sumOfN(N[i], tasks[j]);
 		}
 	}
