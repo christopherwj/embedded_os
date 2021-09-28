@@ -11,7 +11,7 @@ pid_t mainId;
 ull_t N[] = {(ull_t)1e8, (ull_t)1e9, (ull_t)1e10};
 unsigned tasks[] = {16,2,4,8};
 
-void sumOfN(ull_t n, unsigned tasks){
+void sum_N(ull_t n, unsigned tasks){
 	pid_t creatorId;
 	int pipefd[2];
 	clock_t start, end;
@@ -23,7 +23,6 @@ void sumOfN(ull_t n, unsigned tasks){
 	pipe(pipefd);
 	
 	start = clock();
-	// Create n tasks.
 	for(unsigned i = 1; i < tasks; i = i * 2){
 		creatorId = getpid();
 		fork();
@@ -39,10 +38,7 @@ void sumOfN(ull_t n, unsigned tasks){
 	}
 	write(pipefd[1], &sum, (size_t)8);
 	close(pipefd[1]);
-
-//	printf("ID: %d Range: %llu %llu %llu Total: %llu\n", getpid(), min, max, range, sum);
 	if(getpid() != mainId) exit(0);
-//	printf("Main ID: %d\n", mainId);
 	if(getpid() == mainId){
 		wait(NULL);
 		for(unsigned i = 0; i < tasks; i++){
@@ -60,7 +56,7 @@ int main(int argc, char *argv[]){
 	mainId = getpid();
 	for(int i = 0; i < 3; i++){
 		for(int j = 0; j < 1; j++){
-			sumOfN(N[i], tasks[j]);
+			sum_N(N[i], tasks[j]);
 		}
 	}
 	return 0;
